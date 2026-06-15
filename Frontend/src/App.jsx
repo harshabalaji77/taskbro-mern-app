@@ -7,6 +7,8 @@ import Dashboard from './pages/Dashboard';
 import Header from './pages/Header';
 import ChangePassword from './pages/ChangePassword';
 import { getMe, logout } from './services/api';
+import { ToastProvider, useToast } from './contexts/ToastContext';
+import DeleteTaskModal from './components/DeleteTaskModal';
 
 const getTasksKey = (userId) => `taskflow-tasks-${userId}`;
 
@@ -33,7 +35,10 @@ const ProtectedRoute = ({ user, children }) => {
   return children;
 };
 
-const App = () => {
+// Inner component so it can use useToast (must be inside ToastProvider)
+const AppInner = () => {
+  const { showToast } = useToast();
+
   const [tasks, setTasks] = useState(loadTasksFromStorage);
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -42,6 +47,9 @@ const App = () => {
     const savedUser = localStorage.getItem('taskbro-user');
     return savedUser ? JSON.parse(savedUser) : null;
   });
+
+  // Delete confirmation modal state
+  const [deleteModal, setDeleteModal] = useState({ open: false, taskId: null, taskTitle: '' });
 
   const isFirstMount = useRef(true);
   useEffect(() => {
@@ -104,17 +112,11 @@ const App = () => {
 
   const handleAddTask = (newTask) => {
     if (taskToEdit) {
-      setTasks(
-        tasks.map((task) =>
-          task.id === taskToEdit.id
-            ? {
-                ...task,
-                ...newTask,
-              }
-            : task
-        )
-      );
+      setTasks(tasks.map((task) =>
+        task.id === taskToEdit.id ? { ...task, ...newTask } : task
+      ));
       setTaskToEdit(null);
+      showToast('Task updated successfully!', 'success');
     } else {
       setTasks([
         {
@@ -125,21 +127,29 @@ const App = () => {
         },
         ...tasks,
       ]);
+      showToast('Task added successfully!', 'success');
     }
   };
 
   const handleToggleComplete = (id) => {
-    setTasks(
-      tasks.map((task) =>
-        task.id === id ? { ...task, completed: !task.completed } : task
-      )
-    );
+    setTasks(tasks.map((task) =>
+      task.id === id ? { ...task, completed: !task.completed } : task
+    ));
   };
 
   const handleDeleteTask = (id) => {
-    if (window.confirm('Are you sure you want to delete this task?')) {
-      setTasks(tasks.filter((task) => task.id !== id));
-    }
+    const task = tasks.find((t) => t.id === id);
+    setDeleteModal({ open: true, taskId: id, taskTitle: task?.title || '' });
+  };
+
+  const confirmDelete = () => {
+    setTasks(tasks.filter((task) => task.id !== deleteModal.taskId));
+    setDeleteModal({ open: false, taskId: null, taskTitle: '' });
+    showToast('Task deleted successfully!', 'success');
+  };
+
+  const cancelDelete = () => {
+    setDeleteModal({ open: false, taskId: null, taskTitle: '' });
   };
 
   const handleEditTask = (task) => {
@@ -151,29 +161,23 @@ const App = () => {
   const inProgressTasks = tasks.filter((task) => !task.completed).length;
 
   return (
-    <Router>
+    <>
+      <DeleteTaskModal
+        isOpen={deleteModal.open}
+        taskTitle={deleteModal.taskTitle}
+        onConfirm={confirmDelete}
+        onCancel={cancelDelete}
+      />
+
       <Routes>
         <Route
           path="/login"
-          element={
-            user ? (
-              <Navigate to="/" replace />
-            ) : (
-              <Login onLoginSuccess={handleLoginSuccess} />
-            )
-          }
+          element={user ? <Navigate to="/" replace /> : <Login onLoginSuccess={handleLoginSuccess} />}
         />
         <Route
           path="/signup"
-          element={
-            user ? (
-              <Navigate to="/" replace />
-            ) : (
-              <Register />
-            )
-          }
+          element={user ? <Navigate to="/" replace /> : <Register />}
         />
-
         <Route
           path="/*"
           element={
@@ -203,16 +207,23 @@ const App = () => {
                     </div>
                   }
                 />
-                <Route
-                  path="/change-password"
-                  element={<ChangePassword />}
-                />
+                <Route path="/change-password" element={<ChangePassword />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </ProtectedRoute>
           }
         />
       </Routes>
+    </>
+  );
+};
+
+const App = () => {
+  return (
+    <Router>
+      <ToastProvider>
+        <AppInner />
+      </ToastProvider>
     </Router>
   );
 };

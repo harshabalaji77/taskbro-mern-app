@@ -40,6 +40,8 @@ sequenceDiagram
 - **📅 Deadline Tracking**: Add optional due dates to track task completion schedules.
 - **🛡️ Secure Password Management**: Built-in functionality for users to change their password securely using bcrypt hashing.
 - **📱 Fluid UI/UX**: Crafted using React, styled with Tailwind CSS, and optimized with Vite for ultra-fast performance.
+- **🔔 Toast Notifications**: Global animated top-center toast system for success and error feedback across login, register, change-password, and task actions — no browser alerts.
+- **🗑️ Delete Task Modal**: Inline styled modal matching the app's design language (consistent with AddTaskModal) used to confirm task deletion.
 
 
 ### 🛠️ Technology Stack
@@ -83,10 +85,14 @@ TaskBro/
 │   │   ├── assets/                # App-compiled asset structures
 │   │   ├── components/
 │   │   │   ├── AddTaskModal.jsx   # Modal form view to capture task fields
+│   │   │   ├── DeleteTaskModal.jsx # Confirmation modal for task deletion
 │   │   │   ├── SearchBar.jsx      # Fuzzy text task filter input
 │   │   │   ├── TaskCard.jsx       # Layout component for individual tasks
 │   │   │   ├── TaskList.jsx       # Grid wrapper rendering multiple TaskCards
-│   │   │   └── TaskStats.jsx      # Dashboard statistics analytics banner
+│   │   │   ├── TaskStats.jsx      # Dashboard statistics analytics banner
+│   │   │   └── Toast.jsx          # Animated top-center toast notification UI
+│   │   ├── contexts/
+│   │   │   └── ToastContext.jsx   # Global toast state provider & useToast() hook
 │   │   ├── pages/
 │   │   │   ├── ChangePassword.jsx # Form view to execute password update
 │   │   │   ├── Dashboard.jsx      # Main layout displaying welcome, stats, task controls

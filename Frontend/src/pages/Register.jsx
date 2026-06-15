@@ -1,29 +1,29 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { register } from '../services/api';
+import { useToast } from '../contexts/ToastContext';
 
 const Register = () => {
+  const { showToast } = useToast();
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
 
     if (password !== confirmPassword) {
-      return setError('Passwords do not match');
+      return showToast('Passwords do not match', 'error');
     }
 
     if (password.length < 6) {
-      return setError('Password must be at least 6 characters');
+      return showToast('Password must be at least 6 characters', 'error');
     }
 
     setLoading(true);
@@ -38,7 +38,10 @@ const Register = () => {
         },
       });
     } catch (err) {
-      setError(err.message || 'Failed to connect to backend server. Make sure it is running.');
+      showToast(
+        err.message || 'Failed to connect to backend server. Make sure it is running.',
+        'error'
+      );
     } finally {
       setLoading(false);
     }
@@ -81,29 +84,6 @@ const Register = () => {
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 sm:px-10 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 border border-gray-200">
-          {error && (
-            <div className="mb-4 bg-red-50 border-l-4 border-red-500 p-4 rounded-md">
-              <div className="flex">
-                <div className="flex-shrink-0">
-                  <svg
-                    className="h-5 w-5 text-red-500"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </div>
-                <div className="ml-3 flex-1">
-                  <p className="text-sm text-red-700">{error}</p>
-                </div>
-              </div>
-            </div>
-          )}
-
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
               <label htmlFor="username" className="block text-sm font-medium text-gray-700">
