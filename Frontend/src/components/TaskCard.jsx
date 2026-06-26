@@ -30,7 +30,7 @@ const TaskCard = ({ task, onToggleComplete, onDelete, onEdit }) => {
                 )}
               </div>
             </div>
-            <h3 className={`text-base font-medium flex-1 transition-colors ${
+            <h3 className={`text-base font-medium flex-1 truncate transition-colors ${
               task.completed ? 'text-gray-400' : 'text-gray-900'
             }`}>
               {task.title}

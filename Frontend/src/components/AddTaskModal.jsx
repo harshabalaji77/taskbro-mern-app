@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const AddTaskModal = ({ isOpen, onClose, onAddTask, taskToEdit }) =>  {
+const AddTaskModal = ({ isOpen, onClose, onAddTask, taskToEdit }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [dueDate, setDueDate] = useState('');
@@ -67,21 +67,28 @@ const AddTaskModal = ({ isOpen, onClose, onAddTask, taskToEdit }) =>  {
         aria-labelledby="add-edit-modal-title"
       >
         <div className="p-6">
-          <div className="flex items-center justify-between mb-6">
-            <h2 id="add-edit-modal-title" className="text-xl font-semibold text-gray-900">
-              {taskToEdit ? 'Edit Task' : 'Add New Task'}
-            </h2>
-            <button
-              onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 transition-colors"
-              aria-label="Close"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
+          <div className="mb-7">
+            <div className="flex items-center justify-between mb-1">
+              <h2 id="add-edit-modal-title" className="text-xl font-semibold text-gray-900">
+                {taskToEdit ? 'Edit Task' : 'Add New Task'}
+              </h2>
+              <button
+                onClick={onClose}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+                aria-label="Close"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <p className="text-[13px] text-gray-500">
+              {taskToEdit
+                ? 'Update the details below to modify your task'
+                : 'Fill in the details below to create a new task'}
+            </p>
           </div>
-          
+
           <div>
             <div className="mb-4">
               <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1.5">
@@ -96,8 +103,8 @@ const AddTaskModal = ({ isOpen, onClose, onAddTask, taskToEdit }) =>  {
                 placeholder="Enter task name"
               />
             </div>
-            
-            <div className="mb-4">
+
+            <div className="mb-2">
               <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1.5">
                 Description
               </label>
@@ -110,20 +117,21 @@ const AddTaskModal = ({ isOpen, onClose, onAddTask, taskToEdit }) =>  {
                 placeholder="Enter task description"
               />
             </div>
-            
+
             <div className="mb-6">
               <label htmlFor="dueDate" className="block text-sm font-medium text-gray-700 mb-1.5">
-                Due Date (Optional)
+                Due Date <span className="font-normal text-gray-400">(Optional)</span>
               </label>
               <input
                 type="date"
                 id="dueDate"
                 value={dueDate}
                 onChange={(e) => setDueDate(e.target.value)}
-                className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent focus:bg-white text-sm transition-colors"
+                className="w-full px-3 py-2.5 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent focus:bg-white text-sm transition-colors cursor-pointer"
+                style={{ colorScheme: 'light' }}
               />
             </div>
-            
+
             <div className="flex justify-end space-x-3">
               <button
                 type="button"
