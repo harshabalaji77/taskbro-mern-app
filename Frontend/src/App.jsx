@@ -4,11 +4,13 @@ import { v4 as uuidv4 } from 'uuid';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
+import TasksPage from './pages/TasksPage';
 import Header from './pages/Header';
 import ChangePassword from './pages/ChangePassword';
 import { getMe, logout } from './services/api';
 import { ToastProvider, useToast } from './contexts/ToastContext';
 import DeleteTaskModal from './components/DeleteTaskModal';
+import AddTaskModal from './components/AddTaskModal';
 
 const getTasksKey = (userId) => `taskflow-tasks-${userId}`;
 
@@ -40,7 +42,6 @@ const AppInner = () => {
   const { showToast } = useToast();
 
   const [tasks, setTasks] = useState(loadTasksFromStorage);
-  const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [taskToEdit, setTaskToEdit] = useState(null);
   const [user, setUser] = useState(() => {
@@ -169,6 +170,16 @@ const AppInner = () => {
         onCancel={cancelDelete}
       />
 
+      <AddTaskModal
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          setTaskToEdit(null);
+        }}
+        onAddTask={handleAddTask}
+        taskToEdit={taskToEdit}
+      />
+
       <Routes>
         <Route
           path="/login"
@@ -191,18 +202,29 @@ const AppInner = () => {
                       <Dashboard
                         user={user}
                         tasks={tasks}
-                        searchTerm={searchTerm}
-                        setSearchTerm={setSearchTerm}
-                        isModalOpen={isModalOpen}
                         setIsModalOpen={setIsModalOpen}
-                        taskToEdit={taskToEdit}
                         setTaskToEdit={setTaskToEdit}
-                        handleAddTask={handleAddTask}
                         handleToggleComplete={handleToggleComplete}
                         handleDeleteTask={handleDeleteTask}
                         handleEditTask={handleEditTask}
                         completedTasks={completedTasks}
                         inProgressTasks={inProgressTasks}
+                      />
+                    </div>
+                  }
+                />
+                <Route
+                  path="/tasks"
+                  element={
+                    <div className="min-h-screen bg-gray-50">
+                      <Header user={user} onLogout={handleLogout} />
+                      <TasksPage
+                        tasks={tasks}
+                        setIsModalOpen={setIsModalOpen}
+                        setTaskToEdit={setTaskToEdit}
+                        handleToggleComplete={handleToggleComplete}
+                        handleDeleteTask={handleDeleteTask}
+                        handleEditTask={handleEditTask}
                       />
                     </div>
                   }
