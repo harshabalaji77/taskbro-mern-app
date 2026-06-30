@@ -1,10 +1,19 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 import React, { useState, useEffect } from 'react';
 
 const AddTaskModal = ({ isOpen, onClose, onAddTask, taskToEdit }) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [dueDate, setDueDate] = useState('');
+  const [priority, setPriority] = useState('medium');
   const [visible, setVisible] = useState(false);
+
+  const resetForm = () => {
+    setTitle('');
+    setDescription('');
+    setDueDate('');
+    setPriority('medium');
+  };
 
   useEffect(() => {
     if (isOpen) {
@@ -21,16 +30,11 @@ const AddTaskModal = ({ isOpen, onClose, onAddTask, taskToEdit }) => {
       setTitle(taskToEdit.title);
       setDescription(taskToEdit.description || '');
       setDueDate(taskToEdit.dueDate || '');
+      setPriority(taskToEdit.priority || 'medium');
     } else {
       resetForm();
     }
   }, [taskToEdit, isOpen]);
-
-  const resetForm = () => {
-    setTitle('');
-    setDescription('');
-    setDueDate('');
-  };
 
   const handleSubmit = () => {
     if (!title.trim()) return;
@@ -39,6 +43,7 @@ const AddTaskModal = ({ isOpen, onClose, onAddTask, taskToEdit }) => {
       title: title.trim(),
       description: description.trim(),
       dueDate: dueDate || undefined,
+      priority,
     });
 
     resetForm();
@@ -104,7 +109,7 @@ const AddTaskModal = ({ isOpen, onClose, onAddTask, taskToEdit }) => {
               />
             </div>
 
-            <div className="mb-2">
+            <div className="mb-4">
               <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1.5">
                 Description
               </label>
@@ -116,6 +121,32 @@ const AddTaskModal = ({ isOpen, onClose, onAddTask, taskToEdit }) => {
                 rows={3}
                 placeholder="Enter task description"
               />
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                Priority
+              </label>
+              <div className="grid grid-cols-3 gap-2">
+                {['low', 'medium', 'high'].map((p) => (
+                  <button
+                    key={p}
+                    type="button"
+                    onClick={() => setPriority(p)}
+                    className={`py-2 px-3 text-xs font-semibold rounded-lg border transition-all ${
+                      priority === p
+                        ? p === 'low'
+                          ? 'bg-green-50 border-green-500 text-green-700'
+                          : p === 'medium'
+                          ? 'bg-blue-50 border-blue-500 text-blue-700'
+                          : 'bg-red-50 border-red-500 text-red-700'
+                        : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'
+                    }`}
+                  >
+                    {p.charAt(0).toUpperCase() + p.slice(1)}
+                  </button>
+                ))}
+              </div>
             </div>
 
             <div className="mb-6">
